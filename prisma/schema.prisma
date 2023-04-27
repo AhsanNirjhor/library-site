@@ -16,6 +16,7 @@ model Member{
   password String
   email String @unique
   address String
+  borrow Borrow?
 }
 
 model Book{
@@ -28,6 +29,7 @@ model Book{
   genreId Int
   writer Writer @relation(fields: [writerId] ,references: [id])
   writerId Int
+  borrow Borrow?
 }
 
 model Genre{
@@ -35,10 +37,28 @@ model Genre{
   name String
   description String
   book Book[]
+  writer WritersOnGenre[]
 }
 model Writer{
   id Int @id @default(autoincrement())
   name String
   book Book[]
-  
+  genre WritersOnGenre[]
+
+}
+model WritersOnGenre{
+  writer Writer @relation(fields: [writerId], references: [id])
+  writerId Int
+  genre Genre @relation(fields: [genreId],references: [id])
+  genreId Int
+  @@id([writerId, genreId])
+}
+model Borrow{
+  id Int @id @default(autoincrement())
+  member Member @relation(fields: [memberId], references: [id])
+  memberId Int @unique
+  book Book @relation(fields: [bookId], references: [id])
+  bookId Int @unique
+  borrowDate DateTime
+  returnDate DateTime
 }
